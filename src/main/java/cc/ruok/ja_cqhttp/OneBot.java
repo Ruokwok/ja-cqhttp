@@ -26,11 +26,14 @@ public class OneBot {
         types.put("group_ban_ban", GroupBanEvent.class);
         types.put("group_ban_unban", GroupUnbanEvent.class);
         types.put("group_recall", GroupRecallEvent.class);
-        types.put("friend_recall", FirendRecallEvent.class);
+        types.put("friend_recall", FriendRecallEvent.class);
         types.put("poke", GroupPokeEvent.class);
         types.put("lucky_king", GroupLuckyKingEvent.class);
         types.put("honor", GroupHonorEvent.class);
         types.put("friend_add", FriendAddEvent.class);
+        types.put("request_friend", FriendRequestEvent.class);
+        types.put("request_add_group", GroupRequestEvent.class);
+        types.put("request_invite_group", GroupInviteEvent.class);
     }
 
     public void registerListener(EventListener listener) {
@@ -82,6 +85,10 @@ public class OneBot {
         } else if (event.getPostType().equals("notice")) {
             NoticeEvent noticeEvent = gson.fromJson(json, NoticeEvent.class);
             Class<?> aClass = types.get(noticeEvent.getNoticeType());
+            if (aClass != null) callEvent((Event) gson.fromJson(json, aClass));
+        } else if (event.getPostType().equals("request")) {
+            RequestEvent requestEvent = gson.fromJson(json, RequestEvent.class);
+            Class<?> aClass = types.get(requestEvent.getRequestType());
             if (aClass != null) callEvent((Event) gson.fromJson(json, aClass));
         }
     }

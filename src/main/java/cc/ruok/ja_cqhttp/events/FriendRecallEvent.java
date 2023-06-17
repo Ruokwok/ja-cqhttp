@@ -1,6 +1,6 @@
 package cc.ruok.ja_cqhttp.events;
 
-public class FirendRecallEvent extends NoticeEvent {
+public class FriendRecallEvent extends NoticeEvent {
 
     protected long message_id;
 
