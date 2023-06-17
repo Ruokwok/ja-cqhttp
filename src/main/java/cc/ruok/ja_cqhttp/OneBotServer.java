@@ -1,6 +1,6 @@
 package cc.ruok.ja_cqhttp;
 
-public class OneBotServer extends OneBot {
+public class OneBotServer {
 
     protected WSServer wss;
 

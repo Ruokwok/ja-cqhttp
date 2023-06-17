@@ -1,7 +1,10 @@
 package cc.ruok.ja_cqhttp;
 
+import cc.ruok.ja_cqhttp.api.GroupMessageAPI;
+import cc.ruok.ja_cqhttp.api.PrivateMessageAPI;
 import cc.ruok.ja_cqhttp.events.*;
 import com.google.gson.Gson;
+import org.java_websocket.WebSocket;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -13,6 +16,7 @@ public class OneBot {
 
     protected HashMap<EventListener, LinkedList<Method>> listeners = new HashMap<>();
     protected static HashMap<String, Class<?>> types = new HashMap<>();
+    protected WebSocket ws;
 
     static {
         types.put("heartbeat", HeartbeatEvent.class);
@@ -34,6 +38,10 @@ public class OneBot {
         types.put("request_friend", FriendRequestEvent.class);
         types.put("request_add_group", GroupRequestEvent.class);
         types.put("request_invite_group", GroupInviteEvent.class);
+    }
+
+    public OneBot(WebSocket ws) {
+        this.ws = ws;
     }
 
     public void registerListener(EventListener listener) {
@@ -91,6 +99,19 @@ public class OneBot {
             Class<?> aClass = types.get(requestEvent.getRequestType());
             if (aClass != null) callEvent((Event) gson.fromJson(json, aClass));
         }
+    }
+
+
+    public void sendJson(String json) {
+        ws.send(json);
+    }
+
+    public void sendPrivateMessage(long id, String message, boolean escape) {
+        ws.send(new PrivateMessageAPI(id, message, escape).toString());
+    }
+
+    public void sendGroupMessage(long group, String message, boolean escape) {
+        ws.send(new GroupMessageAPI(group, message, escape).toString());
     }
 
 }
