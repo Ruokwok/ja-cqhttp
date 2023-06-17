@@ -12,7 +12,7 @@ public class GruopNoticeEvent extends Event {
         if (sub_type.equals("set")) return notice_type + "_set";
         if (sub_type.equals("unset")) return notice_type + "_unset";
         if (sub_type.equals("ban")) return notice_type + "_ban";
-        if (sub_type.equals("unban")) return notice_type + "_unban";
+        if (sub_type.equals("lift_ban")) return notice_type + "_unban";
         return notice_type;
     }
 
