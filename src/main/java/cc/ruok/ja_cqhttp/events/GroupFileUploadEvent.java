@@ -24,12 +24,17 @@ public class GroupFileUploadEvent extends GruopNoticeEvent {
         return file.busid;
     }
 
+    public String getFileUrl() {
+        return file.url;
+    }
+
     public class File {
 
         protected String id;
         protected String name;
         protected long size;
         protected long busid;
+        protected String url;
 
     }
 
