@@ -22,6 +22,7 @@ public class OneBot {
         types.put("group_admin_set", GroupAdminSetEvent.class);
         types.put("group_admin_unset", GroupAdminUnsetEvent.class);
         types.put("group_decrease", GroupDecreaseEvent.class);
+        types.put("group_increase", GroupJoinEvent.class);
     }
 
     public void registerListener(EventListener listener) {
