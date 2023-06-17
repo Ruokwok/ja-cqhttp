@@ -26,6 +26,7 @@ public class OneBot {
         types.put("group_ban_ban", GroupBanEvent.class);
         types.put("group_ban_unban", GroupUnbanEvent.class);
         types.put("group_recall", GroupRecallEvent.class);
+        types.put("poke", GroupPokeEvent.class);
     }
 
     public void registerListener(EventListener listener) {

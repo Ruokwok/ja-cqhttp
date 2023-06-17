@@ -19,7 +19,7 @@ public class GroupBanEvent extends GruopNoticeEvent {
         return duration;
     }
 
-    public long getTarget() {
+    public long getTargetId() {
         return user_id;
     }
 
