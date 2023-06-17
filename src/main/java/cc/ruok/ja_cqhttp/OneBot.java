@@ -30,6 +30,7 @@ public class OneBot {
         types.put("poke", GroupPokeEvent.class);
         types.put("lucky_king", GroupLuckyKingEvent.class);
         types.put("honor", GroupHonorEvent.class);
+        types.put("friend_add", FriendAddEvent.class);
     }
 
     public void registerListener(EventListener listener) {
