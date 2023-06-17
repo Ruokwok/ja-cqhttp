@@ -19,6 +19,7 @@ public class OneBot {
         types.put("group", GroupMessageEvent.class);
         types.put("private", PrivateMessageEvent.class);
         types.put("group_upload", GroupFileUploadEvent.class);
+        types.put("group_admin_set", GroupAdminSetEvent.class);
     }
 
     public void registerListener(EventListener listener) {
