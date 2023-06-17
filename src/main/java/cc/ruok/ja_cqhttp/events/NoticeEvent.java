@@ -1,6 +1,6 @@
 package cc.ruok.ja_cqhttp.events;
 
-public class GruopNoticeEvent extends Event {
+public class NoticeEvent extends Event {
 
     protected String notice_type;
     protected long group_id;

@@ -1,6 +1,6 @@
 package cc.ruok.ja_cqhttp.events;
 
-public class GroupRecallEvent extends GruopNoticeEvent {
+public class GroupRecallEvent extends NoticeEvent {
 
     protected long message_id;
     protected long operator_id;

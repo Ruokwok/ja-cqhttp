@@ -1,6 +1,6 @@
 package cc.ruok.ja_cqhttp.events;
 
-public class GroupBanEvent extends GruopNoticeEvent {
+public class GroupBanEvent extends NoticeEvent {
 
     protected long duration;
     protected long operator_id;

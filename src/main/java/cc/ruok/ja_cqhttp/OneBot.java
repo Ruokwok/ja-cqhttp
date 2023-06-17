@@ -76,12 +76,10 @@ public class OneBot {
             if (aClass != null) callEvent((Event) gson.fromJson(json, aClass));
         } else if (event.getPostType().equals("message")) {
             MessageEvent messageEvent = gson.fromJson(json, MessageEvent.class);
-            callEvent(messageEvent);
             Class<?> aClass = types.get(messageEvent.getMessageType());
             if (aClass != null) callEvent((Event) gson.fromJson(json, aClass));
         } else if (event.getPostType().equals("notice")) {
-            GruopNoticeEvent noticeEvent = gson.fromJson(json, GruopNoticeEvent.class);
-            callEvent(noticeEvent);
+            NoticeEvent noticeEvent = gson.fromJson(json, NoticeEvent.class);
             Class<?> aClass = types.get(noticeEvent.getNoticeType());
             if (aClass != null) callEvent((Event) gson.fromJson(json, aClass));
         }

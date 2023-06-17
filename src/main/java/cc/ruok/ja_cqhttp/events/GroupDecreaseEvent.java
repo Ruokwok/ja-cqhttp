@@ -1,6 +1,6 @@
 package cc.ruok.ja_cqhttp.events;
 
-public class GroupDecreaseEvent extends GruopNoticeEvent {
+public class GroupDecreaseEvent extends NoticeEvent {
 
     protected long operator_id;
 

@@ -1,6 +1,6 @@
 package cc.ruok.ja_cqhttp.events;
 
-public class GroupFileUploadEvent extends GruopNoticeEvent {
+public class GroupFileUploadEvent extends NoticeEvent {
 
     protected File file;
 
