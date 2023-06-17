@@ -18,6 +18,7 @@ public class OneBot {
         types.put("heartbeat", HeartbeatEvent.class);
         types.put("group", GroupMessageEvent.class);
         types.put("private", PrivateMessageEvent.class);
+        types.put("group_upload", GroupFileUploadEvent.class);
     }
 
     public void registerListener(EventListener listener) {
