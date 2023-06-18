@@ -8,16 +8,19 @@ public class Message {
     private MessageAPI msg;
     private String content;
     private boolean isGroup;
+    private long self;
+    private long messageId;
 
-    protected Message(MessageAPI msg, String content, boolean isGroup) {
+    protected Message(MessageAPI msg, String content, boolean isGroup, long self) {
         this.msg = msg;
         this.content = content;
         this.isGroup = isGroup;
         this.time = System.currentTimeMillis();
+        this.self = self;
     }
 
-    protected Message(String content, boolean isGroup) {
-        this(null, content, isGroup);
+    protected Message(String content, boolean isGroup, long self) {
+        this(null, content, isGroup, self);
     }
 
     public boolean isGroup() {
@@ -28,12 +31,20 @@ public class Message {
         this.msg = msg;
     }
 
+    protected void setMessageId(long id) {
+        this.messageId = id;
+    }
+
     public String getEcho() {
         return msg.echo;
     }
 
     public long getMessageId() {
-        return msg.data.message_id;
+        try {
+            return msg.data.message_id;
+        } catch (Exception e) {
+            return messageId;
+        }
     }
 
     public String getString() {
@@ -42,5 +53,18 @@ public class Message {
 
     public long getTime() {
         return time;
+    }
+
+    public long getSelf() {
+        return self;
+    }
+
+    public void recall() {
+        OneBot bot = OneBot.getActiveInstance(self);
+        if (bot == null) {
+            //TODO 没有活跃的OneBot实例时
+        } else {
+            bot.recallMessage(getMessageId());
+        }
     }
 }

@@ -1,9 +1,9 @@
 package cc.ruok.ja_cqhttp;
 
-import cc.ruok.ja_cqhttp.api.API;
 import cc.ruok.ja_cqhttp.api.GroupMessageAPI;
 import cc.ruok.ja_cqhttp.api.MessageAPI;
 import cc.ruok.ja_cqhttp.api.PrivateMessageAPI;
+import cc.ruok.ja_cqhttp.api.RecallMessageAPI;
 import cc.ruok.ja_cqhttp.events.*;
 import com.google.gson.Gson;
 import org.java_websocket.WebSocket;
@@ -16,14 +16,18 @@ import java.util.Map;
 
 public class OneBot {
 
+    protected static HashMap<Long, OneBot> active = new HashMap<>();
+
     protected HashMap<EventListener, LinkedList<Method>> listeners = new HashMap<>();
     protected static HashMap<String, Class<?>> types = new HashMap<>();
     protected WebSocket ws;
+    private long self;
 
     private HashMap<String, Message> msg = new HashMap<>();
 
     static {
         types.put("heartbeat", HeartbeatEvent.class);
+        types.put("lifecycle", LifecycleEvent.class);
         types.put("group", GroupMessageEvent.class);
         types.put("private", PrivateMessageEvent.class);
         types.put("group_upload", GroupFileUploadEvent.class);
@@ -44,8 +48,25 @@ public class OneBot {
         types.put("request_invite_group", GroupInviteEvent.class);
     }
 
+    public static OneBot getActiveInstance(long id) {
+        return active.get(id);
+    }
+
     public OneBot(WebSocket ws) {
         this.ws = ws;
+        OneBot bot = this;
+        registerListener(new EventListener() {
+            @Handler
+            public void onLifecycle(LifecycleEvent event) {
+                self = event.getSelf();
+                active.put(self, bot);
+            }
+        });
+    }
+
+    public void close() {
+        ws.close();
+        active.remove(self);
     }
 
     public void registerListener(EventListener listener) {
@@ -67,6 +88,12 @@ public class OneBot {
     }
 
     protected void callEvent(Event event) {
+        if (event instanceof GroupMessageEvent) {
+            GroupMessageEvent ge = (GroupMessageEvent) event;
+            Message message = new Message(ge.getMessageString(), true, self);
+            message.setMessageId(ge.getMessageId());
+            ge.setMessage(message);
+        }
         for (Map.Entry<EventListener, LinkedList<Method>> entry: listeners.entrySet()) {
             for (Method method: entry.getValue()) {
                 if (method.getParameters()[0].getType().getName().equals(event.getClass().getName())) {
@@ -118,13 +145,17 @@ public class OneBot {
         }
     }
 
+    public long getSelf() {
+        return self;
+    }
+
     public void sendJson(String json) {
         ws.send(json);
     }
 
     public void sendPrivateMessage(long group, String message, boolean escape, String echo) {
         PrivateMessageAPI msg = new PrivateMessageAPI(group, message, echo, escape);
-        this.msg.put(msg.getEcho(), new Message(message, false));
+        this.msg.put(msg.getEcho(), new Message(message, false, self));
         ws.send(msg.toString());
     }
 
@@ -138,7 +169,7 @@ public class OneBot {
 
     public void sendGroupMessage(long group, String message, boolean escape, String echo) {
         GroupMessageAPI msg = new GroupMessageAPI(group, message, echo, escape);
-        this.msg.put(msg.getEcho(), new Message(message, true));
+        this.msg.put(msg.getEcho(), new Message(message, true, self));
         ws.send(msg.toString());
     }
 
@@ -148,6 +179,15 @@ public class OneBot {
 
     public void sendGroupMessage(long group, String message) {
         sendGroupMessage(group, message, false);
+    }
+
+    public void recallMessage(long messageId) {
+        RecallMessageAPI recall = new RecallMessageAPI(messageId);
+        ws.send(recall.toString());
+    }
+
+    public void recallMessage(Message message) {
+        recallMessage(message.getMessageId());
     }
 
 }

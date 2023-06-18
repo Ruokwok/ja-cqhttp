@@ -9,7 +9,7 @@ public class API {
 
     public String action;
     public HashMap<String, Object> params = new HashMap<>();
-    public String echo;
+    public String echo = randomUUID();
 
     public static String randomUUID() {
         return UUID.randomUUID().toString();

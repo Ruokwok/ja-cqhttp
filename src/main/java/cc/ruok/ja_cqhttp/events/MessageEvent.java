@@ -22,7 +22,7 @@ public class MessageEvent extends Event {
         return message_id;
     }
 
-    public String getMessage() {
+    public String getMessageString() {
         return message;
     }
 

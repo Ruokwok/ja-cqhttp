@@ -48,9 +48,10 @@ public class OneBotClient extends OneBot {
         return t;
     }
 
+    @Override
     public void close() {
         reconnect = -1;
-        wsc.close();
+        super.close();
     }
 
     public void setReconnect(int time) {

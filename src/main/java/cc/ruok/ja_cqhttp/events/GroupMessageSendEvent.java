@@ -8,6 +8,7 @@ public class GroupMessageSendEvent extends Event {
 
     public GroupMessageSendEvent(Message message) {
         this.message = message;
+        this.self_id = message.getSelf();
     }
 
     public Message getMessage() {
