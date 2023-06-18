@@ -1,5 +1,6 @@
 package cc.ruok.ja_cqhttp;
 
+import cc.ruok.ja_cqhttp.api.API;
 import cc.ruok.ja_cqhttp.api.GroupMessageAPI;
 import cc.ruok.ja_cqhttp.api.MessageAPI;
 import cc.ruok.ja_cqhttp.api.PrivateMessageAPI;
@@ -121,14 +122,32 @@ public class OneBot {
         ws.send(json);
     }
 
-    public void sendPrivateMessage(long id, String message, boolean escape) {
-        ws.send(new PrivateMessageAPI(id, message, escape).toString());
+    public void sendPrivateMessage(long group, String message, boolean escape, String echo) {
+        PrivateMessageAPI msg = new PrivateMessageAPI(group, message, echo, escape);
+        this.msg.put(msg.getEcho(), new Message(message, false));
+        ws.send(msg.toString());
     }
 
-    public void sendGroupMessage(long group, String message, String echo, boolean escape) {
+    public void sendPrivateMessage(long group, String message, boolean escape) {
+        sendPrivateMessage(group, message, escape, null);
+    }
+
+    public void sendPrivateMessage(long group, String message) {
+        sendPrivateMessage(group, message, false);
+    }
+
+    public void sendGroupMessage(long group, String message, boolean escape, String echo) {
         GroupMessageAPI msg = new GroupMessageAPI(group, message, echo, escape);
         this.msg.put(msg.getEcho(), new Message(message, true));
         ws.send(msg.toString());
+    }
+
+    public void sendGroupMessage(long group, String message, boolean escape) {
+        sendGroupMessage(group, message, escape, null);
+    }
+
+    public void sendGroupMessage(long group, String message) {
+        sendGroupMessage(group, message, false);
     }
 
 }
