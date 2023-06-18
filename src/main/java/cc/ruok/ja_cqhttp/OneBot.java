@@ -18,6 +18,8 @@ public class OneBot {
     protected static HashMap<String, Class<?>> types = new HashMap<>();
     protected WebSocket ws;
 
+    private HashMap<String, Boolean> msg = new HashMap<>();
+
     static {
         types.put("heartbeat", HeartbeatEvent.class);
         types.put("group", GroupMessageEvent.class);
@@ -81,7 +83,19 @@ public class OneBot {
     protected void callEvent(String json) {
         Gson gson = new Gson();
         Event event = gson.fromJson(json, Event.class);
-        if (event.getPostType().equals("meta_event")) {
+        if (event.getPostType() == null) {
+            ResponseEvent response = gson.fromJson(json, ResponseEvent.class);
+            if (this.msg.containsKey(response.echo)) {
+                if (this.msg.get(response.echo)) {
+                    PrivateMessageSendEvent sendEvent = gson.fromJson(json, PrivateMessageSendEvent.class);
+                    callEvent(sendEvent);
+                } else {
+                    GroupMessageSendEvent sendEvent = gson.fromJson(json, GroupMessageSendEvent.class);
+                    callEvent(sendEvent);
+                }
+                this.msg.remove(response.echo);
+            }
+        } else if (event.getPostType().equals("meta_event")) {
             MetaEvent metaEvent = gson.fromJson(json, MetaEvent.class);
             callEvent(metaEvent);
             Class<?> aClass = types.get(metaEvent.getMetaType());
@@ -101,7 +115,6 @@ public class OneBot {
         }
     }
 
-
     public void sendJson(String json) {
         ws.send(json);
     }
@@ -110,8 +123,10 @@ public class OneBot {
         ws.send(new PrivateMessageAPI(id, message, escape).toString());
     }
 
-    public void sendGroupMessage(long group, String message, boolean escape) {
-        ws.send(new GroupMessageAPI(group, message, escape).toString());
+    public void sendGroupMessage(long group, String message, String echo, boolean escape) {
+        GroupMessageAPI msg = new GroupMessageAPI(group, message, echo, escape);
+        this.msg.put(msg.getEcho(), false);
+        ws.send(msg.toString());
     }
 
 }

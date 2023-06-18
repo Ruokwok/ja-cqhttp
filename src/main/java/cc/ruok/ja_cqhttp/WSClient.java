@@ -7,11 +7,11 @@ import java.net.URI;
 
 public class WSClient extends WebSocketClient {
 
-    private OneBotClient obc;
+    private OneBot bot;
 
-    protected WSClient(URI serverUri, OneBotClient obc) {
+    protected WSClient(URI serverUri, OneBot bot) {
         super(serverUri);
-        this.obc = obc;
+        this.bot = bot;
     }
 
     @Override
@@ -22,7 +22,7 @@ public class WSClient extends WebSocketClient {
     public void onMessage(String s) {
 //        System.out.println(s);
         if (!s.contains("heartbeat")) System.out.println(s);
-        obc.callEvent(s);
+        bot.callEvent(s);
     }
 
     @Override
