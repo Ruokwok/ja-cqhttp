@@ -1,6 +1,7 @@
 package cc.ruok.ja_cqhttp;
 
 import cc.ruok.ja_cqhttp.api.GroupMessageAPI;
+import cc.ruok.ja_cqhttp.api.MessageAPI;
 import cc.ruok.ja_cqhttp.api.PrivateMessageAPI;
 import cc.ruok.ja_cqhttp.events.*;
 import com.google.gson.Gson;
@@ -18,7 +19,7 @@ public class OneBot {
     protected static HashMap<String, Class<?>> types = new HashMap<>();
     protected WebSocket ws;
 
-    private HashMap<String, Boolean> msg = new HashMap<>();
+    private HashMap<String, Message> msg = new HashMap<>();
 
     static {
         types.put("heartbeat", HeartbeatEvent.class);
@@ -86,11 +87,12 @@ public class OneBot {
         if (event.getPostType() == null) {
             ResponseEvent response = gson.fromJson(json, ResponseEvent.class);
             if (this.msg.containsKey(response.echo)) {
-                if (this.msg.get(response.echo)) {
-                    PrivateMessageSendEvent sendEvent = gson.fromJson(json, PrivateMessageSendEvent.class);
+                this.msg.get(response.echo).setMessageAPI(gson.fromJson(json, MessageAPI.class));
+                if (this.msg.get(response.echo).isGroup()) {
+                    GroupMessageSendEvent sendEvent = new GroupMessageSendEvent(this.msg.get(response.echo));
                     callEvent(sendEvent);
                 } else {
-                    GroupMessageSendEvent sendEvent = gson.fromJson(json, GroupMessageSendEvent.class);
+                    PrivateMessageSendEvent sendEvent = new PrivateMessageSendEvent(this.msg.get(response.echo));
                     callEvent(sendEvent);
                 }
                 this.msg.remove(response.echo);
@@ -125,7 +127,7 @@ public class OneBot {
 
     public void sendGroupMessage(long group, String message, String echo, boolean escape) {
         GroupMessageAPI msg = new GroupMessageAPI(group, message, echo, escape);
-        this.msg.put(msg.getEcho(), false);
+        this.msg.put(msg.getEcho(), new Message(message, true));
         ws.send(msg.toString());
     }
 

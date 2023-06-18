@@ -1,23 +1,25 @@
 package cc.ruok.ja_cqhttp.events;
 
+import cc.ruok.ja_cqhttp.Message;
+
 public class GroupMessageSendEvent extends Event {
 
-    protected String echo;
-    protected String message;
-    protected String status;
-    protected int retcode;
-    protected Data data;
+    protected Message message;
+
+    public GroupMessageSendEvent(Message message) {
+        this.message = message;
+    }
+
+    public Message getMessage() {
+        return message;
+    }
 
     public String getEcho() {
-        return echo;
+        return message.getEcho();
     }
 
     public long getMessageId() {
-        return data.message_id;
-    }
-
-    public class Data {
-        protected long message_id;
+        return message.getMessageId();
     }
 
 }

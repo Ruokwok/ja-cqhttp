@@ -1,35 +1,46 @@
 package cc.ruok.ja_cqhttp;
 
+import cc.ruok.ja_cqhttp.api.MessageAPI;
+
 public class Message {
 
-    protected String echo;
-    protected String message;
-    protected String status;
-    protected int retcode;
-    protected Data data = new Data();
     protected long time;
+    private MessageAPI msg;
+    private String content;
+    private boolean isGroup;
 
-    protected Message(String echo, String message) {
-        this.echo = echo;
+    protected Message(MessageAPI msg, String content, boolean isGroup) {
+        this.msg = msg;
+        this.content = content;
+        this.isGroup = isGroup;
         this.time = System.currentTimeMillis();
-        this.message = message;
+    }
+
+    protected Message(String content, boolean isGroup) {
+        this(null, content, isGroup);
+    }
+
+    public boolean isGroup() {
+        return isGroup;
+    }
+
+    protected void setMessageAPI(MessageAPI msg) {
+        this.msg = msg;
     }
 
     public String getEcho() {
-        return echo;
+        return msg.echo;
     }
 
     public long getMessageId() {
-        return data.message_id;
+        return msg.data.message_id;
     }
 
-    public void setMessageId(long id) {
-        this.data = new Data();
-        this.data.message_id = id;
+    public String getString() {
+        return content;
     }
 
-    public class Data {
-        protected long message_id;
+    public long getTime() {
+        return time;
     }
-
 }
