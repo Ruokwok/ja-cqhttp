@@ -1,9 +1,6 @@
 package cc.ruok.ja_cqhttp;
 
-import cc.ruok.ja_cqhttp.api.GroupMessageAPI;
-import cc.ruok.ja_cqhttp.api.MessageAPI;
-import cc.ruok.ja_cqhttp.api.PrivateMessageAPI;
-import cc.ruok.ja_cqhttp.api.RecallMessageAPI;
+import cc.ruok.ja_cqhttp.api.*;
 import cc.ruok.ja_cqhttp.events.*;
 import com.google.gson.Gson;
 import org.java_websocket.WebSocket;
@@ -188,6 +185,15 @@ public class OneBot {
 
     public void recallMessage(Message message) {
         recallMessage(message.getMessageId());
+    }
+
+    public void sendLike(long id, int count) {
+        int times = count > 10 ? 10 : Math.max(count, 1);
+        ws.send(new SendLikeAPI(id, times).toString());
+    }
+
+    public void sendLike(long id) {
+        sendLike(id, 1);
     }
 
 }
