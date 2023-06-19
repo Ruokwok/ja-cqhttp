@@ -1,12 +1,14 @@
 package cc.ruok.ja_cqhttp.events;
 
-import com.google.gson.Gson;
+import cc.ruok.ja_cqhttp.OneBot;
 
 public class Event {
 
     public long time;
     public long self_id;
     public String post_type;
+    private OneBot bot;
+    private String json;
 
     /**
      * @return 机器人的QQ号
@@ -27,5 +29,21 @@ public class Event {
      */
     public String getPostType() {
         return post_type;
+    }
+
+    public void setOneBot(OneBot bot) {
+        this.bot = bot;
+    }
+
+    public OneBot getOneBot() {
+        return bot;
+    }
+
+    public String getJson() {
+        return json;
+    }
+
+    public void setJson(String json) {
+        this.json = json;
     }
 }

@@ -1,6 +1,7 @@
 package cc.ruok.ja_cqhttp;
 
 import cc.ruok.ja_cqhttp.api.*;
+import cc.ruok.ja_cqhttp.api.exception.TimeoutException;
 import cc.ruok.ja_cqhttp.events.*;
 import com.google.gson.Gson;
 import org.java_websocket.WebSocket;
@@ -16,6 +17,7 @@ public class OneBot {
     protected static HashMap<Long, OneBot> active = new HashMap<>();
 
     protected HashMap<EventListener, LinkedList<Method>> listeners = new HashMap<>();
+    protected HashMap<String, API> sync = new HashMap<>();
     protected static HashMap<String, Class<?>> types = new HashMap<>();
     protected WebSocket ws;
     private long self;
@@ -85,6 +87,7 @@ public class OneBot {
     }
 
     protected void callEvent(Event event) {
+        event.setOneBot(this);
         if (event instanceof GroupMessageEvent) {
             GroupMessageEvent ge = (GroupMessageEvent) event;
             Message message = new Message(ge.getMessageString(), true, self);
@@ -110,18 +113,9 @@ public class OneBot {
         Gson gson = new Gson();
         Event event = gson.fromJson(json, Event.class);
         if (event.getPostType() == null) {
-            ResponseEvent response = gson.fromJson(json, ResponseEvent.class);
-            if (this.msg.containsKey(response.echo)) {
-                this.msg.get(response.echo).setMessageAPI(gson.fromJson(json, MessageAPI.class));
-                if (this.msg.get(response.echo).isGroup()) {
-                    GroupMessageSendEvent sendEvent = new GroupMessageSendEvent(this.msg.get(response.echo));
-                    callEvent(sendEvent);
-                } else {
-                    PrivateMessageSendEvent sendEvent = new PrivateMessageSendEvent(this.msg.get(response.echo));
-                    callEvent(sendEvent);
-                }
-                this.msg.remove(response.echo);
-            }
+            Response response = gson.fromJson(json, Response.class);
+            response.json = json;
+            onResponse(response);
         } else if (event.getPostType().equals("meta_event")) {
             MetaEvent metaEvent = gson.fromJson(json, MetaEvent.class);
             callEvent(metaEvent);
@@ -139,6 +133,25 @@ public class OneBot {
             RequestEvent requestEvent = gson.fromJson(json, RequestEvent.class);
             Class<?> aClass = types.get(requestEvent.getRequestType());
             if (aClass != null) callEvent((Event) gson.fromJson(json, aClass));
+        }
+    }
+
+    private void onResponse(Response response) {
+        Gson gson = new Gson();
+        if (this.msg.containsKey(response.echo)) {
+            this.msg.get(response.echo).setMessageAPI(gson.fromJson(response.json, MessageAPI.class));
+            if (this.msg.get(response.echo).isGroup()) {
+                GroupMessageSendEvent sendEvent = new GroupMessageSendEvent(this.msg.get(response.echo));
+                callEvent(sendEvent);
+            } else {
+                PrivateMessageSendEvent sendEvent = new PrivateMessageSendEvent(this.msg.get(response.echo));
+                callEvent(sendEvent);
+            }
+            this.msg.remove(response.echo);
+        } else {
+            API api = sync.get(response.echo);
+            api.data = response.data;
+            api.notify();
         }
     }
 
@@ -194,6 +207,24 @@ public class OneBot {
 
     public void sendLike(long id) {
         sendLike(id, 1);
+    }
+
+    public Message getMessage(long id) {
+        GetMessageAPI api = new GetMessageAPI(id);
+        ws.send(api.toString());
+        sync.put(api.getEcho(), api);
+        synchronized (api) {
+            try {
+                api.wait(2000);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        if (api.data == null) {
+            throw new TimeoutException();
+        } else {
+            return new Message(api.data.message, api.data.group, self);
+        }
     }
 
 }
