@@ -1,7 +1,7 @@
 package cc.ruok.ja_cqhttp;
 
 import cc.ruok.ja_cqhttp.api.*;
-import cc.ruok.ja_cqhttp.api.exception.TimeoutException;
+import cc.ruok.ja_cqhttp.exception.TimeoutException;
 import cc.ruok.ja_cqhttp.events.*;
 import com.google.gson.Gson;
 import org.java_websocket.WebSocket;
