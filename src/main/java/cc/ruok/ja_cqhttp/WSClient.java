@@ -1,5 +1,6 @@
 package cc.ruok.ja_cqhttp;
 
+import cc.ruok.ja_cqhttp.api.GetVersionInfoAPI;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -16,14 +17,12 @@ public class WSClient extends WebSocketClient {
 
     @Override
     public void onOpen(ServerHandshake serverHandshake) {
+        send(new GetVersionInfoAPI().toString());
     }
 
     @Override
     public void onMessage(String s) {
-//        System.out.println(s);
-        if (!s.contains("heartbeat")) System.out.println(s);
-//        bot.callEvent(s);
-        if (s.contains("echo")) bot.callEvent(s);
+        bot.callEvent(s);
     }
 
     @Override

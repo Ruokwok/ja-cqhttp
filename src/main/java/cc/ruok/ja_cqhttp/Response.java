@@ -23,6 +23,9 @@ public class Response {
         int real_id;
         long time;
         Sender sender;
+        String app_name;
+        String app_version;
+        String protocol_version;
     }
 
 }

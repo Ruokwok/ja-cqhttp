@@ -1,6 +1,7 @@
 package cc.ruok.ja_cqhttp;
 
 import cc.ruok.ja_cqhttp.api.*;
+import cc.ruok.ja_cqhttp.exception.NotSupportedException;
 import cc.ruok.ja_cqhttp.exception.TimeoutException;
 import cc.ruok.ja_cqhttp.events.*;
 import com.google.gson.Gson;
@@ -21,6 +22,9 @@ public class OneBot {
     protected static HashMap<String, Class<?>> types = new HashMap<>();
     protected WebSocket ws;
     private long self;
+    private String appName;
+    private String appVersion;
+    private String protocol;
 
     private HashMap<String, Message> msg = new HashMap<>();
 
@@ -148,6 +152,10 @@ public class OneBot {
                 callEvent(sendEvent);
             }
             this.msg.remove(response.echo);
+        } else if (response.echo.equals("get_version_info")) {
+            appName = response.data.app_name;
+            appVersion = response.data.app_version;
+            protocol = response.data.protocol_version;
         } else {
             API api = sync.get(response.echo);
             api.data = response.data;
@@ -201,6 +209,9 @@ public class OneBot {
     }
 
     public void sendLike(long id, int count) {
+        if (getAppName().equals("go-cqhttp")) {
+            throw new NotSupportedException(this, "发送名片赞(send_like)");
+        }
         int times = count > 10 ? 10 : Math.max(count, 1);
         ws.send(new SendLikeAPI(id, times).toString());
     }
@@ -227,4 +238,15 @@ public class OneBot {
         }
     }
 
+    public String getAppName() {
+        return appName;
+    }
+
+    public String getAppVersion() {
+        return appVersion;
+    }
+
+    public String getProtocol() {
+        return protocol;
+    }
 }
