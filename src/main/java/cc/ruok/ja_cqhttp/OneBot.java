@@ -1,6 +1,7 @@
 package cc.ruok.ja_cqhttp;
 
 import cc.ruok.ja_cqhttp.api.*;
+import cc.ruok.ja_cqhttp.exception.GroupNotFoundException;
 import cc.ruok.ja_cqhttp.exception.NotSupportedException;
 import cc.ruok.ja_cqhttp.exception.PermissionDeniedException;
 import cc.ruok.ja_cqhttp.exception.TimeoutException;
@@ -165,6 +166,7 @@ public class OneBot {
             API api = sync.get(response.echo);
             api.data = response.data;
             api.code = response.retcode;
+            api.msg = response.msg;
             synchronized (api) {
                 api.notify();
             }
@@ -181,9 +183,10 @@ public class OneBot {
             }
         }
         sync.remove(api.getEcho());
-        switch (api.code) {
-            case -1: throw new TimeoutException();
-            case 404: throw new NotSupportedException(this, api.action);
+        if (api.code == -1) throw new TimeoutException();
+        switch (api.msg) {
+            case "API_NOT_FOUND": throw new NotSupportedException(this, api.action);
+            case "GROUP_NOT_FOUND": throw new GroupNotFoundException((long) api.params.get("group_id"));
         }
         return api;
     }

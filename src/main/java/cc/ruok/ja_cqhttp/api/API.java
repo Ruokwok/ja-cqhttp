@@ -13,6 +13,7 @@ public class API {
     public String echo = randomUUID();
     public Response.Data data;
     public int code = -1;
+    public String msg;
 
     public static String randomUUID() {
         return UUID.randomUUID().toString();

@@ -11,6 +11,7 @@ public class Response {
     public String status;
     public String json;
     public int retcode;
+    public String msg;
 
     public class Data {
 
