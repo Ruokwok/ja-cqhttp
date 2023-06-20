@@ -1,7 +1,7 @@
 package cc.ruok.ja_cqhttp;
 
 import cc.ruok.ja_cqhttp.api.*;
-import cc.ruok.ja_cqhttp.exception.GroupNotFoundException;
+import cc.ruok.ja_cqhttp.exception.NotFoundException;
 import cc.ruok.ja_cqhttp.exception.NotSupportedException;
 import cc.ruok.ja_cqhttp.exception.PermissionDeniedException;
 import cc.ruok.ja_cqhttp.exception.TimeoutException;
@@ -186,7 +186,8 @@ public class OneBot {
         if (api.code == -1) throw new TimeoutException();
         switch (api.msg) {
             case "API_NOT_FOUND": throw new NotSupportedException(this, api.action);
-            case "GROUP_NOT_FOUND": throw new GroupNotFoundException((long) api.params.get("group_id"));
+            case "GROUP_NOT_FOUND": throw new NotFoundException();
+            case "NOT_MANAGEABLE": throw new PermissionDeniedException();
         }
         return api;
     }
@@ -279,10 +280,7 @@ public class OneBot {
     public void setGroupBan(long group, long id, int time) {
         SetGroupBanAPI api = new SetGroupBanAPI(group, id, time);
         sendJson(api.toString());
-        api = waitResponse(api);
-        if (api.getCode() == 100) {
-            throw new PermissionDeniedException();
-        }
+        waitResponse(api);
     }
 
     public void setGroupBan(long group, long id) {
@@ -301,6 +299,12 @@ public class OneBot {
 
     public void liftGroupWholeBan(long group) {
         SetGroupWholeBanAPI api = new SetGroupWholeBanAPI(group, false);
+        sendJson(api.toString());
+        waitResponse(api);
+    }
+
+    public void kickFromGroup(long group, long user, boolean reject) {
+        SetGroupKickAPI api = new SetGroupKickAPI(group, user, reject);
         sendJson(api.toString());
         waitResponse(api);
     }
