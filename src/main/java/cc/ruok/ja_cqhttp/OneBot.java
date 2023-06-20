@@ -184,6 +184,7 @@ public class OneBot {
         }
         sync.remove(api.getEcho());
         if (api.code == -1) throw new TimeoutException();
+        if (api.code == 0) return api;
         switch (api.msg) {
             case "API_NOT_FOUND": throw new NotSupportedException(this, api.action);
             case "GROUP_NOT_FOUND": throw new NotFoundException();
@@ -305,6 +306,12 @@ public class OneBot {
 
     public void kickFromGroup(long group, long user, boolean reject) {
         SetGroupKickAPI api = new SetGroupKickAPI(group, user, reject);
+        sendJson(api.toString());
+        waitResponse(api);
+    }
+
+    public void setGroupName(long group, String name) {
+        SetGroupNameAPI api = new SetGroupNameAPI(group, name);
         sendJson(api.toString());
         waitResponse(api);
     }
