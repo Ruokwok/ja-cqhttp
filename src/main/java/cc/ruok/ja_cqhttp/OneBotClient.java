@@ -1,34 +1,24 @@
 package cc.ruok.ja_cqhttp;
 
-import cc.ruok.ja_cqhttp.api.GroupMessageAPI;
-import cc.ruok.ja_cqhttp.api.PrivateMessageAPI;
-
 import java.net.URI;
 
 public class OneBotClient extends OneBot {
 
     protected WSClient wsc;
     private boolean running = false;
-    private int reconnect;
-
-    public OneBotClient(String address) {
-        this(address, 10000);
-    }
 
     /**
      * 创建OneBot客户端
      *
      * @param address   OneBot Server地址
-     * @param reconnect 断线重连时间 <1时为不重连
      */
-    public OneBotClient(String address, int reconnect) {
+    public OneBotClient(String address) {
         super(null);
-        this.reconnect = reconnect;
         this.wsc = new WSClient(URI.create(address), this);
         this.ws = wsc;
     }
 
-    public Thread run() {
+    public Thread runAsync(long reconnect) {
         if (running) return null;
         running = true;
         Thread t = new Thread(() -> {
@@ -48,14 +38,20 @@ public class OneBotClient extends OneBot {
         return t;
     }
 
-    @Override
-    public void close() {
-        reconnect = -1;
-        super.close();
+    public Thread runAsync() {
+        return runAsync(5000);
     }
 
-    public void setReconnect(int time) {
-        this.reconnect = time;
+    public void run() {
+        if (running) return;
+        running = true;
+        wsc.run();
+        running = false;
+    }
+
+    @Override
+    public void close() {
+        super.close();
     }
 
 }
