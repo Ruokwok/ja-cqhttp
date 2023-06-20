@@ -177,10 +177,9 @@ public class OneBot {
             }
         }
         sync.remove(api.getEcho());
-        if (api.code == -1) {
-            throw new TimeoutException();
-        } else if (api.code == 404) {
-            throw new NotSupportedException(this, api.action);
+        switch (api.code) {
+            case -1: throw new TimeoutException();
+            case 404: throw new NotSupportedException(this, api.action);
         }
         return api;
     }
@@ -274,12 +273,16 @@ public class OneBot {
         SetGroupBanAPI api = new SetGroupBanAPI(group, id, time);
         sendJson(api.toString());
         api = waitResponse(api);
-        if (api.getCode() != 200) {
+        if (api.getCode() == 100) {
             throw new PermissionDeniedException();
         }
     }
 
     public void setGroupBan(long group, long id) {
         setGroupBan(group, id, 600);
+    }
+
+    public void liftGroupBan(long group, long id) {
+        setGroupBan(group, id, 0);
     }
 }
