@@ -335,4 +335,16 @@ public class OneBot {
     public void cancelGroupMemberTitle(long group, long user) {
         setGroupMemberTitle(group, user, "");
     }
+
+    public void setGroupAdmin(long group, long user) {
+        SetGroupAdminAPI api = new SetGroupAdminAPI(group, user, true);
+        sendJson(api.toString());
+        waitResponse(api);
+    }
+
+    public void cancelGroupAdmin(long group, long user) {
+        SetGroupAdminAPI api = new SetGroupAdminAPI(group, user, false);
+        sendJson(api.toString());
+        waitResponse(api);
+    }
 }
