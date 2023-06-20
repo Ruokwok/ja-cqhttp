@@ -315,4 +315,14 @@ public class OneBot {
         sendJson(api.toString());
         waitResponse(api);
     }
+
+    public void quitGroup(long group, boolean dismiss) {
+        SetGroupLeaveAPI api = new SetGroupLeaveAPI(group, dismiss);
+        sendJson(api.toString());
+        waitResponse(api);
+    }
+
+    public void quitGroup(long group) {
+        quitGroup(group, false);
+    }
 }
