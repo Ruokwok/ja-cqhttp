@@ -2,6 +2,7 @@ package cc.ruok.ja_cqhttp;
 
 import cc.ruok.ja_cqhttp.api.*;
 import cc.ruok.ja_cqhttp.exception.NotSupportedException;
+import cc.ruok.ja_cqhttp.exception.PermissionDeniedException;
 import cc.ruok.ja_cqhttp.exception.TimeoutException;
 import cc.ruok.ja_cqhttp.events.*;
 import com.google.gson.Gson;
@@ -159,8 +160,33 @@ public class OneBot {
         } else {
             API api = sync.get(response.echo);
             api.data = response.data;
-            api.notify();
+            api.code = response.retcode;
+            synchronized (api) {
+                api.notify();
+            }
         }
+    }
+
+    private <T extends API> T waitResponse(T api, int wait) {
+        sync.put(api.getEcho(), api);
+        synchronized (api) {
+            try {
+                api.wait(wait);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        sync.remove(api.getEcho());
+        if (api.code == -1) {
+            throw new TimeoutException();
+        } else if (api.code == 404) {
+            throw new NotSupportedException(this, api.action);
+        }
+        return api;
+    }
+
+    private <T extends API> T waitResponse(T api) {
+        return waitResponse(api, 2000);
     }
 
     public long getSelf() {
@@ -209,11 +235,10 @@ public class OneBot {
     }
 
     public void sendLike(long id, int count) {
-        if (getAppName().equals("go-cqhttp")) {
-            throw new NotSupportedException(this, "发送名片赞(send_like)");
-        }
         int times = count > 10 ? 10 : Math.max(count, 1);
-        ws.send(new SendLikeAPI(id, times).toString());
+        SendLikeAPI api = new SendLikeAPI(id, times);
+        ws.send(api.toString());
+        waitResponse(api);
     }
 
     public void sendLike(long id) {
@@ -223,19 +248,8 @@ public class OneBot {
     public Message getMessage(long id) {
         GetMessageAPI api = new GetMessageAPI(id);
         ws.send(api.toString());
-        sync.put(api.getEcho(), api);
-        synchronized (api) {
-            try {
-                api.wait(2000);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        if (api.data == null) {
-            throw new TimeoutException();
-        } else {
-            return new Message(api.data.message, api.data.group, self);
-        }
+        api = waitResponse(api);
+        return new Message(api.data.message, api.data.group, self);
     }
 
     public String getAppName() {
@@ -248,5 +262,24 @@ public class OneBot {
 
     public String getProtocol() {
         return protocol;
+    }
+
+    /**
+     * 禁言群成员
+     * @param group 群号
+     * @param id 目标id
+     * @param time 禁言时长 单位秒
+     */
+    public void setGroupBan(long group, long id, int time) {
+        SetGroupBanAPI api = new SetGroupBanAPI(group, id, time);
+        sendJson(api.toString());
+        api = waitResponse(api);
+        if (api.getCode() != 200) {
+            throw new PermissionDeniedException();
+        }
+    }
+
+    public void setGroupBan(long group, long id) {
+        setGroupBan(group, id, 600);
     }
 }

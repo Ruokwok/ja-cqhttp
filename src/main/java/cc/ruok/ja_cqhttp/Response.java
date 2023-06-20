@@ -10,6 +10,7 @@ public class Response {
     public String echo;
     public String status;
     public String json;
+    public int retcode;
 
     public class Data {
 

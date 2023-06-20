@@ -12,6 +12,7 @@ public class API {
     public HashMap<String, Object> params = new HashMap<>();
     public String echo = randomUUID();
     public Response.Data data;
+    public int code = -1;
 
     public static String randomUUID() {
         return UUID.randomUUID().toString();
@@ -19,6 +20,10 @@ public class API {
 
     public String getEcho() {
         return echo;
+    }
+
+    public int getCode() {
+        return code;
     }
 
     @Override
