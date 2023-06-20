@@ -289,4 +289,16 @@ public class OneBot {
     public void liftGroupBan(long group, long id) {
         setGroupBan(group, id, 0);
     }
+
+    public void setGroupWholeBan(long group) {
+        SetGroupWholeBanAPI api = new SetGroupWholeBanAPI(group, true);
+        sendJson(api.toString());
+        waitResponse(api);
+    }
+
+    public void liftGroupWholeBan(long group) {
+        SetGroupWholeBanAPI api = new SetGroupWholeBanAPI(group, false);
+        sendJson(api.toString());
+        waitResponse(api);
+    }
 }
