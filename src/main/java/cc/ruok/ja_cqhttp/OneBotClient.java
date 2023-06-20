@@ -6,6 +6,7 @@ public class OneBotClient extends OneBot {
 
     protected WSClient wsc;
     private boolean running = false;
+    private long reconnect;
 
     /**
      * 创建OneBot客户端
@@ -20,13 +21,14 @@ public class OneBotClient extends OneBot {
 
     public Thread runAsync(long reconnect) {
         if (running) return null;
+        this.reconnect = reconnect;
         running = true;
         Thread t = new Thread(() -> {
-            while (reconnect > 0) {
+            while (this.reconnect > 0) {
                 wsc.run();
                 try {
-                    if (reconnect > 0) {
-                        Thread.sleep(reconnect);
+                    if (this.reconnect > 0) {
+                        Thread.sleep(this.reconnect);
                     }
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
@@ -51,7 +53,12 @@ public class OneBotClient extends OneBot {
 
     @Override
     public void close() {
+        this.reconnect = 0;
         super.close();
+    }
+
+    public boolean isConnecting() {
+        return wsc.getConnection().isOpen();
     }
 
 }
