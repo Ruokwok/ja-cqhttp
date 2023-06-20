@@ -117,6 +117,9 @@ public class OneBot {
     protected void callEvent(String json) {
         Gson gson = new Gson();
         Event event = gson.fromJson(json, Event.class);
+        Class<?> aClass = null;
+        event.setJson(json);
+        callEvent(event);
         if (event.getPostType() == null) {
             Response response = gson.fromJson(json, Response.class);
             response.json = json;
@@ -124,20 +127,21 @@ public class OneBot {
         } else if (event.getPostType().equals("meta_event")) {
             MetaEvent metaEvent = gson.fromJson(json, MetaEvent.class);
             callEvent(metaEvent);
-            Class<?> aClass = types.get(metaEvent.getMetaType());
-            if (aClass != null) callEvent((Event) gson.fromJson(json, aClass));
+            aClass = types.get(metaEvent.getMetaType());
         } else if (event.getPostType().equals("message")) {
             MessageEvent messageEvent = gson.fromJson(json, MessageEvent.class);
-            Class<?> aClass = types.get(messageEvent.getMessageType());
-            if (aClass != null) callEvent((Event) gson.fromJson(json, aClass));
+            aClass = types.get(messageEvent.getMessageType());
         } else if (event.getPostType().equals("notice")) {
             NoticeEvent noticeEvent = gson.fromJson(json, NoticeEvent.class);
-            Class<?> aClass = types.get(noticeEvent.getNoticeType());
-            if (aClass != null) callEvent((Event) gson.fromJson(json, aClass));
+            aClass = types.get(noticeEvent.getNoticeType());
         } else if (event.getPostType().equals("request")) {
             RequestEvent requestEvent = gson.fromJson(json, RequestEvent.class);
-            Class<?> aClass = types.get(requestEvent.getRequestType());
-            if (aClass != null) callEvent((Event) gson.fromJson(json, aClass));
+            aClass = types.get(requestEvent.getRequestType());
+        }
+        if (aClass != null) {
+            Event e = (Event) gson.fromJson(json, aClass);
+            e.setJson(json);
+            callEvent(e);
         }
     }
 

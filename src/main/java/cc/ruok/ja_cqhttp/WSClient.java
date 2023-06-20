@@ -22,8 +22,6 @@ public class WSClient extends WebSocketClient {
 
     @Override
     public void onMessage(String s) {
-//        System.out.println(s);
-        if (!s.contains("heartbeat")) System.out.println(s);
         bot.callEvent(s);
     }
 
