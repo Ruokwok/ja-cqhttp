@@ -17,19 +17,22 @@ public class WSServer extends WebSocketServer {
     }
 
     @Override
-    public void onOpen(WebSocket webSocket, ClientHandshake clientHandshake) {
-        OneBot bot = new OneBot(webSocket);
-        server.bots.put(webSocket, bot);
+    public void onOpen(WebSocket ws, ClientHandshake clientHandshake) {
+        OneBot bot = new OneBot(ws);
+        server.bots.put(ws, bot);
+        for (EventListener listener : server.baseListeners) {
+            bot.registerListener(listener);
+        }
     }
 
     @Override
-    public void onClose(WebSocket webSocket, int i, String s, boolean b) {
-        server.bots.remove(webSocket);
+    public void onClose(WebSocket ws, int i, String s, boolean b) {
+        server.bots.remove(ws);
     }
 
     @Override
-    public void onMessage(WebSocket webSocket, String s) {
-        OneBot bot = server.bots.get(webSocket);
+    public void onMessage(WebSocket ws, String s) {
+        OneBot bot = server.bots.get(ws);
         if (bot != null) bot.callEvent(s);
     }
 
