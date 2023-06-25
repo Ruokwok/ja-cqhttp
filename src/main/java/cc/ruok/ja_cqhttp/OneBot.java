@@ -96,7 +96,7 @@ public class OneBot {
         event.setOneBot(this);
         if (event instanceof GroupMessageEvent) {
             GroupMessageEvent ge = (GroupMessageEvent) event;
-            Message message = new Message(ge.getMessageString(), true, self);
+            Message message = new Message(ge.getMessageString(), true, self, ge.getSenderId(), ge.getGroupId());
             message.setMessageId(ge.getMessageId());
             ge.setMessage(message);
         }
@@ -207,7 +207,7 @@ public class OneBot {
 
     public void sendPrivateMessage(long group, String message, boolean escape, String echo) {
         PrivateMessageAPI msg = new PrivateMessageAPI(group, message, echo, escape);
-        this.msg.put(msg.getEcho(), new Message(message, false, self));
+        this.msg.put(msg.getEcho(), new Message(message, false, self, self, 0));
         ws.send(msg.toString());
     }
 
@@ -221,7 +221,7 @@ public class OneBot {
 
     public void sendGroupMessage(long group, String message, boolean escape, String echo) {
         GroupMessageAPI msg = new GroupMessageAPI(group, message, echo, escape);
-        this.msg.put(msg.getEcho(), new Message(message, true, self));
+        this.msg.put(msg.getEcho(), new Message(message, true, self, self, group));
         ws.send(msg.toString());
     }
 
@@ -257,7 +257,7 @@ public class OneBot {
         GetMessageAPI api = new GetMessageAPI(id);
         ws.send(api.toString());
         api = waitResponse(api);
-        return new Message(api.data.message, api.data.group, self);
+        return new Message(api.data.message, api.data.group, self, api.data.sender.getId(), api.data.group_id);
     }
 
     public String getAppName() {
@@ -344,6 +344,12 @@ public class OneBot {
 
     public void cancelGroupAdmin(long group, long user) {
         SetGroupAdminAPI api = new SetGroupAdminAPI(group, user, false);
+        sendJson(api.toString());
+        waitResponse(api);
+    }
+
+    public void replyGroupMessage(long group, long messageId, String message) {
+        GroupMessageAPI api = new GroupMessageAPI(group, "[CQ:reply,id=" + messageId + "]" + message, null, false);
         sendJson(api.toString());
         waitResponse(api);
     }

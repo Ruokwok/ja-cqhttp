@@ -40,10 +40,11 @@ OneBotServer server = new OneBotServer(port);
 server.startAsync();    //异步启动
 
 //等待实现端连接后，可以使用以下方法获取OneBot实例
-OneBot bot = OneBot.getActive(qq);
+OneBot bot = OneBot.getActiveInstance(qq);
 bot.sendGroupMessage(groupID, "你好吗?" + Face.HUAJI);    //发送一条群消息
 server.stop();          //关闭OneBotServer服务器
 ```
 
 - `server.start()`方法为同步启动，此时该方法会被阻塞。
 - `server.startAsync()`方法为异步启动，此方法返回一个运行OneBotServer的线程。
+- 由于服务端无法主动重连，每次断线断线重连后OneBot实例会被更新，所以不应保存OneBot对象多次使用，每次使用时请通过OneBot.getActiveInstance(long qq)获取最新的实例。

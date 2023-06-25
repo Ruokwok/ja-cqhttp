@@ -8,6 +8,7 @@ public class GroupMessageEvent extends MessageEvent {
     protected GruopSender sender;
 
     protected Message message_obj;
+    protected long group_id;
 
     /**
      * @return 是否为匿名消息
@@ -30,6 +31,10 @@ public class GroupMessageEvent extends MessageEvent {
 
     public Message getMessage() {
         return message_obj;
+    }
+
+    public long getGroupId() {
+        return group_id;
     }
 
 }

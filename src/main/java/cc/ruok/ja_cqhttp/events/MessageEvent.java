@@ -30,7 +30,7 @@ public class MessageEvent extends Event {
         return raw_message;
     }
 
-    public long getSenderQQ() {
+    public long getSenderId() {
         return user_id;
     }
 

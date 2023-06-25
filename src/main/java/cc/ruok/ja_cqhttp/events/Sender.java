@@ -7,7 +7,7 @@ public class Sender {
     protected String sex;
     protected int age;
 
-    public long getQQ() {
+    public long getId() {
         return user_id;
     }
 

@@ -10,17 +10,21 @@ public class Message {
     private boolean isGroup;
     private long self;
     private long messageId;
+    private long senderId;
+    private long groupId;
 
-    protected Message(MessageAPI msg, String content, boolean isGroup, long self) {
+    protected Message(MessageAPI msg, String content, boolean isGroup, long self, long sender, long group) {
         this.msg = msg;
         this.content = content;
         this.isGroup = isGroup;
         this.time = System.currentTimeMillis();
         this.self = self;
+        this.senderId = sender;
+        this.groupId = group;
     }
 
-    protected Message(String content, boolean isGroup, long self) {
-        this(null, content, isGroup, self);
+    protected Message(String content, boolean isGroup, long self, long sender, long group) {
+        this(null, content, isGroup, self, sender, group);
     }
 
     public boolean isGroup() {
@@ -65,6 +69,14 @@ public class Message {
             //TODO 没有活跃的OneBot实例时
         } else {
             bot.recallMessage(getMessageId());
+        }
+    }
+
+    public void reply(String message) {
+        OneBot bot = OneBot.getActiveInstance(self);
+        if (bot == null) {
+        } else {
+            bot.replyGroupMessage(groupId, messageId, message);
         }
     }
 }
