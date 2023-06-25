@@ -55,6 +55,21 @@ public class Message {
         return content;
     }
 
+    public String getFormatString() {
+        return content.replaceAll("\\[CQ:face[^\\]]*\\]", "[face]")
+                .replaceAll("\\[CQ:image[^\\]]*\\]", "[image]")
+                .replaceAll("\\[CQ:dice[^\\]]*\\]", "[dice]")
+                .replaceAll("\\[CQ:shake[^\\]]*\\]", "[shake]")
+                .replaceAll("\\[CQ:poke[^\\]]*\\]", "[poke]")
+                .replaceAll("\\[CQ:share[^\\]]*\\]", "[share]")
+                .replaceAll("\\[CQ:contact[^\\]]*\\]", "[contact]")
+                .replaceAll("\\[CQ:location[^\\]]*\\]", "[location]")
+                .replaceAll("\\[CQ:music[^\\]]*\\]", "[music]")
+                .replaceAll("\\[CQ:xml[^\\]]*\\]", "[xml]")
+                .replaceAll("\\[CQ:json[^\\]]*\\]", "[json]")
+                .replaceAll("\\[CQ:rps[^\\]]*\\]", "[rps]");
+    }
+
     public long getTime() {
         return time;
     }

@@ -14,6 +14,7 @@ public class API {
     public Response.Data data;
     public int code = -1;
     public String msg;
+    public String wording;
 
     public static String randomUUID() {
         return UUID.randomUUID().toString();

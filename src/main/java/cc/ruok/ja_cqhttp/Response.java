@@ -12,6 +12,7 @@ public class Response {
     public String json;
     public int retcode;
     public String msg;
+    public String wording;
 
     public class Data {
 

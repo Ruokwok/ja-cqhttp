@@ -1,10 +1,7 @@
 package cc.ruok.ja_cqhttp;
 
 import cc.ruok.ja_cqhttp.api.*;
-import cc.ruok.ja_cqhttp.exception.NotFoundException;
-import cc.ruok.ja_cqhttp.exception.NotSupportedException;
-import cc.ruok.ja_cqhttp.exception.PermissionDeniedException;
-import cc.ruok.ja_cqhttp.exception.TimeoutException;
+import cc.ruok.ja_cqhttp.exception.*;
 import cc.ruok.ja_cqhttp.events.*;
 import com.google.gson.Gson;
 import org.java_websocket.WebSocket;
@@ -162,14 +159,14 @@ public class OneBot {
             appName = response.data.app_name;
             appVersion = response.data.app_version;
             protocol = response.data.protocol_version;
-        } else {
-            API api = sync.get(response.echo);
-            api.data = response.data;
-            api.code = response.retcode;
-            api.msg = response.msg;
-            synchronized (api) {
-                api.notify();
-            }
+        }
+        API api = sync.get(response.echo);
+        api.data = response.data;
+        api.code = response.retcode;
+        api.msg = response.msg;
+        api.wording = response.wording;
+        synchronized (api) {
+            api.notify();
         }
     }
 
@@ -189,12 +186,13 @@ public class OneBot {
             case "API_NOT_FOUND": throw new NotSupportedException(this, api.action);
             case "GROUP_NOT_FOUND": throw new NotFoundException();
             case "NOT_MANAGEABLE": throw new PermissionDeniedException();
+            case "SEND_MSG_API_ERROR": throw new SendMessageException(api.wording);
         }
         return api;
     }
 
     private <T extends API> T waitResponse(T api) {
-        return waitResponse(api, 2000);
+        return waitResponse(api, 6000);
     }
 
     public long getSelf() {
@@ -223,6 +221,7 @@ public class OneBot {
         GroupMessageAPI msg = new GroupMessageAPI(group, message, echo, escape);
         this.msg.put(msg.getEcho(), new Message(message, true, self, self, group));
         ws.send(msg.toString());
+        waitResponse(msg);
     }
 
     public void sendGroupMessage(long group, String message, boolean escape) {
@@ -350,6 +349,12 @@ public class OneBot {
 
     public void replyGroupMessage(long group, long messageId, String message) {
         GroupMessageAPI api = new GroupMessageAPI(group, "[CQ:reply,id=" + messageId + "]" + message, null, false);
+        sendJson(api.toString());
+        waitResponse(api);
+    }
+
+    public void replyPrivateMessage(long user, long messageId, String message) {
+        PrivateMessageAPI api = new PrivateMessageAPI(user, "[CQ:reply,id=" + messageId + "]" + message, null, false);
         sendJson(api.toString());
         waitResponse(api);
     }
