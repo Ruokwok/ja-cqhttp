@@ -11,6 +11,7 @@ ja-cqhttp是统一的聊天机器人应用接口标准[OneBot-v11](https://11.on
 ## 引入
 
 ja-cqhttp尚未上传至中央仓库，可以下载到本地进行导入。
+- StarElement CI [http://ci.starelement.net/job/ja-cqhttp/](http://ci.starelement.net/job/ja-cqhttp/)
 
 ## 使用
 
@@ -47,4 +48,4 @@ server.stop();          //关闭OneBotServer服务器
 
 - `server.start()`方法为同步启动，此时该方法会被阻塞。
 - `server.startAsync()`方法为异步启动，此方法返回一个运行OneBotServer的线程。
-- 由于服务端无法主动重连，每次断线断线重连后OneBot实例会被更新，所以不应保存OneBot对象多次使用，每次使用时请通过OneBot.getActiveInstance(long qq)获取最新的实例。
+- 由于服务端无法主动重连，每次断线重连后OneBot实例会被更新，所以不应保存OneBot对象多次使用，每次使用时请通过OneBot.getActiveInstance(long qq)获取最新的实例。
