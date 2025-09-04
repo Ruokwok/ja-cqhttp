@@ -8,11 +8,6 @@ ja-cqhttp是统一的聊天机器人应用接口标准[OneBot-v11](https://11.on
 
 # 开始使用
 
-## 引入
-
-ja-cqhttp尚未上传至中央仓库，可以下载到本地进行导入。
-- StarElement CI [http://ci.starelement.net/job/ja-cqhttp/](http://ci.starelement.net/job/ja-cqhttp/)
-
 ## 使用
 
 目前支持实现端正向/反向WebSocket连接，通过`OneBot`对象操作机器人，一个`OneBot`对象对应一条与实现端的连接。
