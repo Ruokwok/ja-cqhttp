@@ -7,6 +7,7 @@ public class OneBotClient extends OneBot {
     protected WSClient wsc;
     private boolean running = false;
     private long reconnect;
+    private String token;
 
     /**
      * 创建OneBot客户端
@@ -17,6 +18,11 @@ public class OneBotClient extends OneBot {
         super(null);
         this.wsc = new WSClient(URI.create(address), this);
         this.ws = wsc;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+        wsc.addHeader("Authorization", "Bearer " + token);
     }
 
     public Thread runAsync(long reconnect) {
