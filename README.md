@@ -7,6 +7,24 @@ ja-cqhttp是统一的聊天机器人应用接口标准[OneBot-v11](https://11.on
  - 此文档正在完善中
 
 # 开始使用
+导入依赖前，添加StarElement Maven仓库
+```xml
+<repositories>
+    <repository>
+        <id>se-repo</id>
+        <name>StarElement Repository</name>
+        <url>https://repo.starelement.net/maven-public/</url>
+    </repository>
+</repositories>
+```
+添加依赖
+```xml
+<dependency>
+    <groupId>cc.ruok.ja-cqhttp</groupId>
+    <artifactId>ja-cqhttp</artifactId>
+    <version>1.0.2</version>
+</dependency>
+```
 
 ## 使用
 
@@ -17,6 +35,7 @@ ja-cqhttp是统一的聊天机器人应用接口标准[OneBot-v11](https://11.on
 ```java
 long groupID = 100000000;   //群号
 OneBotClient bot = new OneBotClient("ws://127.0.0.1:6700/");
+bot.setToken("114514");     //设置鉴权Token
 // bot.run();       //同步运行
 bot.runAsync(3000); //异步运行
 bot.sendGroupMessage(groupID, "你好吗?" + Face.HUAJI);    //发送一条群消息
