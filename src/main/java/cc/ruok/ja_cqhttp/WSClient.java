@@ -1,6 +1,7 @@
 package cc.ruok.ja_cqhttp;
 
 import cc.ruok.ja_cqhttp.api.GetVersionInfoAPI;
+import cc.ruok.ja_cqhttp.events.WebSocketCloseEvent;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 
@@ -27,6 +28,7 @@ public class WSClient extends WebSocketClient {
 
     @Override
     public void onClose(int i, String s, boolean b) {
+        bot.callEvent(new WebSocketCloseEvent(i, s, b));
     }
 
     @Override
