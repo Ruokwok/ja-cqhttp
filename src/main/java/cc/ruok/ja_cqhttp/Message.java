@@ -94,4 +94,9 @@ public class Message {
             bot.replyGroupMessage(groupId, messageId, message);
         }
     }
+
+    @Override
+    public String toString() {
+        return this.getString();
+    }
 }
