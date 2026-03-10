@@ -63,3 +63,15 @@ server.stop();          //关闭OneBotServer服务器
 - `server.start()`方法为同步启动，此时该方法会被阻塞。
 - `server.startAsync()`方法为异步启动，此方法返回一个运行OneBotServer的线程。
 - 由于服务端无法主动重连，每次断线重连后OneBot实例会被更新，所以不应保存OneBot对象多次使用，每次使用时请通过OneBot.getActiveInstance(long qq)获取最新的实例。
+
+### 监听事件
+```java
+bot.registerListener(new EventListener() {
+    @Handler
+    public void onGroupMessage(GroupMessageEvent e) {
+        Message message = e.getMessage();
+        System.out.println("收到群消息 - " + e.getGroupId() + ":");
+        System.out.println(message.getFormatString());
+    }
+});
+```
